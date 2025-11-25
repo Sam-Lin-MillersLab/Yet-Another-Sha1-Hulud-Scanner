@@ -12,6 +12,7 @@ from .models import (
     LockFileType,
     ScanResult,
     ScanSummary,
+    VersionMismatchWarning,
 )
 from .parsers import (
     BaseLockFileParser,
@@ -107,9 +108,11 @@ class Scanner:
             return summary
         
         # Match against vulnerability database
-        results = self.match_packages(packages)
+        results, version_warnings = self.match_packages(packages)
         for result in results:
             summary.add_result(result)
+        for warning in version_warnings:
+            summary.add_version_mismatch_warning(warning)
         
         return summary
     
@@ -155,6 +158,8 @@ class Scanner:
             summary.files_scanned += file_summary.files_scanned
             for result in file_summary.vulnerabilities:
                 summary.add_result(result)
+            for version_warning in file_summary.version_mismatch_warnings:
+                summary.add_version_mismatch_warning(version_warning)
             for warning in file_summary.warnings:
                 summary.add_warning(warning)
         
@@ -186,7 +191,7 @@ class Scanner:
             summary.add_warning(f"Path not found: {path}")
             return summary
     
-    def match_packages(self, packages: List[InstalledPackage]) -> List[ScanResult]:
+    def match_packages(self, packages: List[InstalledPackage]) -> Tuple[List[ScanResult], List[VersionMismatchWarning]]:
         """
         Match a list of installed packages against the vulnerability database.
         
@@ -194,27 +199,46 @@ class Scanner:
             packages: List of installed packages to check
             
         Returns:
-            List of ScanResult for packages that match vulnerabilities
+            Tuple of:
+                - List of ScanResult for packages that match vulnerabilities (exact version match)
+                - List of VersionMismatchWarning for packages that match by name but not version
         """
         results: List[ScanResult] = []
+        version_warnings: List[VersionMismatchWarning] = []
         
         for pkg in packages:
-            # O(1) lookup using set
-            if pkg.key in self._vulnerable_set:
-                # Get all vulnerable versions for this package
-                vulnerable_versions = self._vulnerable_by_name.get(pkg.name, [pkg.version])
+            # Check if package name is in the affected list
+            if pkg.name in self._vulnerable_by_name:
+                vulnerable_versions = self._vulnerable_by_name[pkg.name]
                 
-                result = ScanResult(
-                    package_name=pkg.name,
-                    installed_version=pkg.version,
-                    vulnerable_versions=vulnerable_versions,
-                    file_path=pkg.file_path,
-                    file_type=pkg.file_type,
-                )
-                results.append(result)
-                logger.debug(f"Found match: {pkg.name}@{pkg.version}")
+                # O(1) lookup using set for exact match
+                if pkg.key in self._vulnerable_set:
+                    # Exact version match - this is a vulnerability
+                    result = ScanResult(
+                        package_name=pkg.name,
+                        installed_version=pkg.version,
+                        vulnerable_versions=vulnerable_versions,
+                        file_path=pkg.file_path,
+                        file_type=pkg.file_type,
+                    )
+                    results.append(result)
+                    logger.debug(f"Found vulnerability match: {pkg.name}@{pkg.version}")
+                else:
+                    # Package name matches but version doesn't - emit warning
+                    warning = VersionMismatchWarning(
+                        package_name=pkg.name,
+                        installed_version=pkg.version,
+                        known_vulnerable_versions=vulnerable_versions,
+                        file_path=pkg.file_path,
+                        file_type=pkg.file_type,
+                    )
+                    version_warnings.append(warning)
+                    logger.debug(
+                        f"Found affected package with different version: "
+                        f"{pkg.name}@{pkg.version} (known vulnerable: {', '.join(vulnerable_versions)})"
+                    )
         
-        return results
+        return results, version_warnings
     
     def discover_lock_files(self, dir_path: Path) -> List[Path]:
         """

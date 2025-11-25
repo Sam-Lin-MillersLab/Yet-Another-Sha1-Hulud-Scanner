@@ -23,7 +23,7 @@ class OutputFormat(Enum):
 # Import model classes for re-export
 from .vulnerable_package import VulnerablePackage
 from .installed_package import InstalledPackage
-from .scan_result import ScanResult, ScanSummary
+from .scan_result import ScanResult, ScanSummary, VersionMismatchWarning
 
 __all__ = [
     "LockFileType",
@@ -32,4 +32,5 @@ __all__ = [
     "InstalledPackage",
     "ScanResult",
     "ScanSummary",
+    "VersionMismatchWarning",
 ]

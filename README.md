@@ -7,6 +7,7 @@ A command-line tool to detect packages affected by the Shai-Hulud 2.0 supply cha
 - 🔍 **Multi-format support**: Scans `package-lock.json` (npm), `yarn.lock` (Yarn v1), and `pnpm-lock.yaml` (pnpm)
 - 📁 **Recursive scanning**: Scan entire directory trees for all lock files
 - 🔌 **Offline operation**: Works completely offline with bundled vulnerability database
+- ⚠️ **Version mismatch warnings**: Alerts when packages match affected names but have different versions
 - 📊 **Multiple output formats**: Human-readable console output or machine-readable JSON
 - 🚀 **CI/CD ready**: Exit codes designed for pipeline integration
 
@@ -141,14 +142,25 @@ security_scan:
 ```
 🔍 Scanning: ./my-project
 
-⚠️  VULNERABLE PACKAGES FOUND
+🚨 VULNERABLE PACKAGES FOUND
 
   📦 @posthog/icons@0.36.1
      └── Found in: package-lock.json
      └── Path: ./my-project/package-lock.json
 
+⚠️  AFFECTED PACKAGES WITH DIFFERENT VERSIONS
+
+   The following packages are in the affected package list,
+   but your installed version differs from known vulnerable versions.
+
+  📦 @accordproject/concerto-analysis@3.25.0
+     └── Known vulnerable versions: 3.24.1
+     └── Found in: package-lock.json
+     └── Path: ./my-project/package-lock.json
+
 ────────────────────────────────────────
 Summary: 1 vulnerable packages found
+         1 affected packages with different versions
 Files scanned: 3
 ────────────────────────────────────────
 ```
@@ -178,6 +190,15 @@ Files scanned: 3
     {
       "package": "@posthog/icons",
       "version": "0.36.1",
+      "file_type": "package-lock.json",
+      "file_path": "./my-project/package-lock.json"
+    }
+  ],
+  "version_mismatch_warnings": [
+    {
+      "package": "@accordproject/concerto-analysis",
+      "installed_version": "3.25.0",
+      "known_vulnerable_versions": ["3.24.1"],
       "file_type": "package-lock.json",
       "file_path": "./my-project/package-lock.json"
     }
