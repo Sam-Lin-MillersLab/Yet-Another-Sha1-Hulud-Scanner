@@ -1,0 +1,40 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  '@posthog/icons':
+    specifier: ^0.36.1
+    version: 0.36.1
+  express:
+    specifier: ^4.18.0
+    version: 4.18.2
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
+
+packages:
+
+  /@babel/core@7.12.3:
+    resolution: {integrity: sha512-fake-integrity}
+    engines: {node: '>=6.9.0'}
+    dev: false
+
+  /@posthog/icons@0.36.1:
+    resolution: {integrity: sha512-fake-integrity}
+    dev: false
+
+  /express@4.18.2:
+    resolution: {integrity: sha512-fake-integrity}
+    engines: {node: '>= 0.10.0'}
+    dev: false
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-fake-integrity}
+    dev: false
+
+  /safe-package@1.0.0:
+    resolution: {integrity: sha512-fake-integrity}
+    dev: false
