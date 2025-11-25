@@ -43,5 +43,15 @@ class JsonOutput:
                 }
                 for result in summary.vulnerabilities
             ],
+            "version_mismatch_warnings": [
+                {
+                    "package": warning.package_name,
+                    "installed_version": warning.installed_version,
+                    "known_vulnerable_versions": warning.known_vulnerable_versions,
+                    "file_type": warning.file_type.value,
+                    "file_path": str(warning.file_path),
+                }
+                for warning in summary.version_mismatch_warnings
+            ],
             "warnings": summary.warnings,
         }

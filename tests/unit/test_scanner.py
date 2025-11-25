@@ -36,11 +36,29 @@ class TestScanner:
             InstalledPackage("safe-pkg", "2.0.0", Path("lock"), LockFileType.NPM),
         ]
         
-        results = scanner.match_packages(packages)
+        results, version_warnings = scanner.match_packages(packages)
         
         assert len(results) == 1
         assert results[0].package_name == "vuln-pkg"
         assert results[0].installed_version == "1.0.0"
+        assert len(version_warnings) == 0
+
+    def test_match_packages_version_mismatch(self, mock_db_parser, tmp_path):
+        """Test version mismatch warnings for affected packages with different versions."""
+        scanner = Scanner(tmp_path)
+        
+        packages = [
+            InstalledPackage("vuln-pkg", "2.0.0", Path("lock"), LockFileType.NPM),  # Different version
+            InstalledPackage("safe-pkg", "1.0.0", Path("lock"), LockFileType.NPM),
+        ]
+        
+        results, version_warnings = scanner.match_packages(packages)
+        
+        assert len(results) == 0  # No exact matches
+        assert len(version_warnings) == 1  # One version mismatch warning
+        assert version_warnings[0].package_name == "vuln-pkg"
+        assert version_warnings[0].installed_version == "2.0.0"
+        assert "1.0.0" in version_warnings[0].known_vulnerable_versions
 
     def test_scan_file_not_found(self, mock_db_parser, tmp_path):
         """Test scanning a non-existent file."""

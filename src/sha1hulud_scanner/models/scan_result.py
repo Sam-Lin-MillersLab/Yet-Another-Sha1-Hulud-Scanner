@@ -12,6 +12,32 @@ if TYPE_CHECKING:
 
 
 @dataclass
+class VersionMismatchWarning:
+    """
+    Represents a package that matches an affected package name but has a different version.
+    
+    This is a warning to alert users that they have a package from the affected list,
+    even though their installed version is not in the known vulnerable versions.
+    
+    Attributes:
+        package_name: Name of the matched package
+        installed_version: Version found in the lock file
+        known_vulnerable_versions: List of versions known to be vulnerable
+        file_path: Path to the lock file where the package was found
+        file_type: Type of lock file (NPM, YARN, or PNPM)
+    """
+    package_name: str
+    installed_version: str
+    known_vulnerable_versions: List[str]
+    file_path: Path
+    file_type: "LockFileType"
+    
+    def __str__(self) -> str:
+        """Return human-readable representation."""
+        return f"{self.package_name}@{self.installed_version}"
+
+
+@dataclass
 class ScanResult:
     """
     Represents a vulnerability match found during scanning.
@@ -53,12 +79,14 @@ class ScanSummary:
         target_path: The file or directory that was scanned
         files_scanned: Number of lock files processed
         vulnerabilities: List of all vulnerability matches found
+        version_mismatch_warnings: List of packages matching affected names but different versions
         warnings: List of warning messages (e.g., malformed entries skipped)
     """
     scan_date: datetime
     target_path: Path
     files_scanned: int = 0
     vulnerabilities: List[ScanResult] = field(default_factory=list)
+    version_mismatch_warnings: List[VersionMismatchWarning] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     
     @property
@@ -71,9 +99,18 @@ class ScanSummary:
         """Return True if any vulnerabilities were found."""
         return len(self.vulnerabilities) > 0
     
+    @property
+    def has_version_mismatch_warnings(self) -> bool:
+        """Return True if any version mismatch warnings exist."""
+        return len(self.version_mismatch_warnings) > 0
+    
     def add_result(self, result: ScanResult) -> None:
         """Add a scan result to the summary."""
         self.vulnerabilities.append(result)
+    
+    def add_version_mismatch_warning(self, warning: VersionMismatchWarning) -> None:
+        """Add a version mismatch warning to the summary."""
+        self.version_mismatch_warnings.append(warning)
     
     def add_warning(self, warning: str) -> None:
         """Add a warning message to the summary."""

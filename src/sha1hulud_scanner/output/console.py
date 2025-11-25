@@ -36,9 +36,13 @@ class ConsoleOutput:
         else:
             self._print_clean(summary)
         
+        # Print version mismatch warnings (affected packages with different versions)
+        if summary.has_version_mismatch_warnings:
+            self._print_version_mismatch_warnings(summary)
+        
         self._print_summary(summary)
         
-        # Print warnings if any
+        # Print general warnings if any
         if summary.warnings:
             self._print("\nWarnings:")
             for warning in summary.warnings:
@@ -46,12 +50,25 @@ class ConsoleOutput:
     
     def _print_vulnerabilities(self, summary: ScanSummary) -> None:
         """Print vulnerability findings."""
-        self._print("⚠️  VULNERABLE PACKAGES FOUND\n")
+        self._print("🚨 VULNERABLE PACKAGES FOUND\n")
         
         for result in summary.vulnerabilities:
             self._print(f"  📦 {result.package_name}@{result.installed_version}")
             self._print(f"     └── Found in: {result.file_type.value}")
             self._print(f"     └── Path: {result.file_path}")
+            self._print("")
+    
+    def _print_version_mismatch_warnings(self, summary: ScanSummary) -> None:
+        """Print warnings for packages matching affected names but with different versions."""
+        self._print("⚠️  AFFECTED PACKAGES WITH DIFFERENT VERSIONS\n")
+        self._print("   The following packages are in the affected package list,")
+        self._print("   but your installed version differs from known vulnerable versions.\n")
+        
+        for warning in summary.version_mismatch_warnings:
+            self._print(f"  📦 {warning.package_name}@{warning.installed_version}")
+            self._print(f"     └── Known vulnerable versions: {', '.join(warning.known_vulnerable_versions)}")
+            self._print(f"     └── Found in: {warning.file_type.value}")
+            self._print(f"     └── Path: {warning.file_path}")
             self._print("")
     
     def _print_clean(self, summary: ScanSummary) -> None:
@@ -63,6 +80,8 @@ class ConsoleOutput:
         separator = "─" * 40
         self._print(separator)
         self._print(f"Summary: {summary.vulnerabilities_found} vulnerable packages found")
+        if summary.has_version_mismatch_warnings:
+            self._print(f"         {len(summary.version_mismatch_warnings)} affected packages with different versions")
         self._print(f"Files scanned: {summary.files_scanned}")
         self._print(separator)
     
