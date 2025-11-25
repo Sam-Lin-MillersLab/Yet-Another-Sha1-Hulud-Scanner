@@ -20,7 +20,7 @@
 **Purpose**: Project initialization and basic structure
 
 - [ ] T001 Create project directory structure per plan.md in src/
-- [ ] T002 Create pyproject.toml with project metadata and dependencies (PyYAML>=6.0, pytest>=7.0, pytest-cov>=4.0)
+- [ ] T002 Create pyproject.toml with project metadata, dependencies (PyYAML>=6.0, pytest>=7.0, pytest-cov>=4.0), and `[project.scripts]` entry point: `sha1hulud-scanner = "sha1hulud_scanner.cli:main"`
 - [ ] T003 [P] Create src/__init__.py with package version
 - [ ] T004 [P] Create src/__main__.py entry point for `python -m sha1hulud_scanner`
 - [ ] T005 [P] Create tests/__init__.py and tests/conftest.py with shared fixtures
@@ -39,7 +39,7 @@
 - [ ] T009 [P] Create ScanResult dataclass in src/models/scan_result.py
 - [ ] T010 Create ScanSummary dataclass in src/models/scan_result.py (depends on T009)
 - [ ] T011 [P] Create abstract BaseLockFileParser in src/parsers/base.py
-- [ ] T012 Implement DatabaseParser for packages.md and wiz-packages.csv in src/parsers/database_parser.py
+- [ ] T012 Implement DatabaseParser for packages.md and wiz-packages.csv in src/parsers/database_parser.py; include FileNotFoundError handling with clear error message per FR-012
 - [ ] T013 [P] Create tests/fixtures/ directory with sample vulnerable database files
 
 **Checkpoint**: Foundation ready - database can be loaded, models defined
