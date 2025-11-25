@@ -27,19 +27,19 @@ def sample_wiz_csv(fixtures_dir: Path) -> Path:
 @pytest.fixture
 def sample_package_lock(fixtures_dir: Path) -> Path:
     """Return the path to sample package-lock.json file."""
-    return fixtures_dir / "sample_package_lock.json"
+    return fixtures_dir / "package-lock.json"
 
 
 @pytest.fixture
 def sample_yarn_lock(fixtures_dir: Path) -> Path:
     """Return the path to sample yarn.lock file."""
-    return fixtures_dir / "sample_yarn.lock"
+    return fixtures_dir / "yarn.lock"
 
 
 @pytest.fixture
 def sample_pnpm_lock(fixtures_dir: Path) -> Path:
     """Return the path to sample pnpm-lock.yaml file."""
-    return fixtures_dir / "sample_pnpm_lock.yaml"
+    return fixtures_dir / "pnpm-lock.yaml"
 
 
 @pytest.fixture
