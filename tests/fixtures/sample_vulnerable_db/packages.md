@@ -1,0 +1,5 @@
+- 02-echo@0.0.7
+- @posthog/icons@0.36.1
+- lodash@4.17.21
+- @babel/core@7.12.3
+- react@17.0.0

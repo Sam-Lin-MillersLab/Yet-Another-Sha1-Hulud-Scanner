@@ -1,0 +1,5 @@
+Package,Version
+02-echo,= 0.0.7
+@posthog/icons,= 0.36.1 || = 0.36.2
+lodash,= 4.17.21
+axios,= 0.21.0 || = 0.21.1
