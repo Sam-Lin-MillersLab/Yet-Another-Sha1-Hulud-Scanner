@@ -12,7 +12,21 @@ A command-line tool to detect packages affected by the Shai-Hulud 2.0 supply cha
 
 ## Installation
 
-### From Source
+### Using uv (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/maxisam/Yet-Another-Sha1-Hulud-Scanner.git
+cd Yet-Another-Sha1-Hulud-Scanner
+
+# Install dependencies and sync
+uv sync
+
+# Run the scanner
+uv run sha1hulud-scanner ./my-project
+```
+
+### Using pip
 
 ```bash
 # Clone the repository
@@ -88,7 +102,19 @@ sha1hulud-scanner -d /path/to/custom/database ./my-project
 
 ## CI/CD Integration
 
-### GitHub Actions
+### GitHub Actions (with uv)
+
+```yaml
+- name: Install uv
+  uses: astral-sh/setup-uv@v4
+
+- name: Scan for Shai-Hulud vulnerabilities
+  run: |
+    uv sync
+    uv run sha1hulud-scanner . || exit 1
+```
+
+### GitHub Actions (with pip)
 
 ```yaml
 - name: Scan for Shai-Hulud vulnerabilities
@@ -102,8 +128,9 @@ sha1hulud-scanner -d /path/to/custom/database ./my-project
 ```yaml
 security_scan:
   script:
-    - pip install -e .
-    - sha1hulud-scanner .
+    - pip install uv
+    - uv sync
+    - uv run sha1hulud-scanner .
   allow_failure: false
 ```
 
@@ -168,14 +195,16 @@ The Shai-Hulud 2.0 attack is a supply chain attack targeting npm packages. This 
 ### Running Tests
 
 ```bash
-# Install development dependencies
-pip install -e ".[dev]"
-
-# Run tests
-pytest
+# Using uv (recommended)
+uv sync
+uv run pytest
 
 # Run tests with coverage
-pytest --cov=sha1hulud_scanner
+uv run pytest --cov=sha1hulud_scanner
+
+# Using pip
+pip install -e ".[dev]"
+pytest
 ```
 
 ### Project Structure
