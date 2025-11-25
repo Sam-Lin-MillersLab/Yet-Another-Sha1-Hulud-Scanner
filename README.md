@@ -16,7 +16,7 @@ A command-line tool to detect packages affected by the Shai-Hulud 2.0 supply cha
 
 ```bash
 # Clone the repository
-git clone https://github.com/maxisam/Yet-Another-Sha1-Hulud-Scanner.git
+git clone https://github.com/Sam-Lin-MillersLab/Yet-Another-Sha1-Hulud-Scanner.git
 cd Yet-Another-Sha1-Hulud-Scanner
 
 # Install dependencies and sync
@@ -30,7 +30,7 @@ uv run sha1hulud-scanner ./my-project
 
 ```bash
 # Clone the repository
-git clone https://github.com/maxisam/Yet-Another-Sha1-Hulud-Scanner.git
+git clone https://github.com/Sam-Lin-MillersLab/Yet-Another-Sha1-Hulud-Scanner.git
 cd Yet-Another-Sha1-Hulud-Scanner
 
 # Create virtual environment (recommended)
